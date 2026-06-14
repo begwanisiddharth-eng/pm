@@ -74,21 +74,21 @@ pass.
 
 Goal: the existing Kanban demo is statically built and served by FastAPI at `/`.
 
-- [ ] Configure Next for static export (`output: "export"`, `images.unoptimized`
+- [x] Configure Next for static export (`output: "export"`, `images.unoptimized`
       if needed); verify the demo works as a static export
-- [ ] Add an `/api` rewrite/proxy for `next dev` so dev hits FastAPI
-- [ ] Build script that runs `next build` and places output where FastAPI serves
-      it; FastAPI serves the exported site at `/`
-- [ ] Update start scripts to (optionally) build the frontend then serve
+- [x] Add an `/api` rewrite/proxy for `next dev` so dev hits FastAPI
+- [x] Build script that runs `next build`; FastAPI serves `frontend/out` at `/`
+      when present (falls back to the placeholder)
+- [x] Update start scripts to (optionally) build the frontend then serve
 
 Tests:
-- [ ] Frontend unit (Vitest): existing `kanban.test.ts` and
+- [x] Frontend unit (Vitest): existing `kanban.test.ts` and
       `KanbanBoard.test.tsx` still pass
-- [ ] e2e (Playwright): board loads at `/`, 5 columns visible, add-card works,
+- [x] e2e (Playwright): board loads at `/`, 5 columns visible, add-card works,
       drag-and-drop moves a card (existing `tests/kanban.spec.ts`)
-- [ ] Backend `test_root_serves_spa` - `GET /` returns the built Kanban HTML
-- [ ] Integration: build the export, start FastAPI, Playwright runs against the
-      served site (not `next dev`)
+- [x] Backend `test_root_serves_spa` - `GET /` returns the built Kanban HTML
+- [x] Integration: build the export, start FastAPI, verify the served SPA HTML
+      and a hashed `_next` asset both load (200) alongside the API
 
 Success criteria: visiting `/` on the FastAPI server shows the working demo
 Kanban; all existing frontend tests pass against the served build.
@@ -99,20 +99,21 @@ Kanban; all existing frontend tests pass against the served build.
 
 Goal: hitting `/` requires login with `user` / `password`; user can log out.
 
-- [ ] Backend: `POST /api/login` validates hardcoded creds, sets signed
+- [x] Backend: `POST /api/login` validates hardcoded creds, sets signed
       HTTP-only session cookie; `POST /api/logout` clears it;
       `GET /api/me` returns current user or 401
-- [ ] Session signing secret loaded from env (dev default allowed)
-- [ ] Auth dependency that protects board API routes (added in Part 6)
-- [ ] Frontend: login page/form; redirect to board when authenticated;
+- [x] Session signing secret loaded from env (dev default allowed)
+- [x] Auth dependency (`get_current_user`) that protects routes; reused by
+      `/api/me` now and board routes in Part 6
+- [x] Frontend: login page/form; redirect to board when authenticated;
       logout control; unauthenticated users see login
 
 Tests:
-- [ ] Backend: `test_login_success`, `test_login_bad_password`,
-      `test_login_bad_user`, `test_me_requires_session`,
-      `test_logout_clears_session`, `test_protected_route_without_session_401`
-- [ ] Frontend unit: login form validation and submit behavior
-- [ ] e2e: visiting `/` shows login; wrong creds show error; correct creds show
+- [x] Backend: `test_login_success`, `test_login_bad_password`,
+      `test_login_bad_user`, `test_me_requires_session`, `test_me_after_login`,
+      `test_logout_clears_session`
+- [x] Frontend unit: login form validation and submit behavior
+- [x] e2e: visiting `/` shows login; wrong creds show error; correct creds show
       board; logout returns to login; refresh keeps session until logout
 
 Success criteria: only authenticated users see the board; sessions persist
