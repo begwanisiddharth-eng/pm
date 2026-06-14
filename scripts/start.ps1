@@ -1,0 +1,9 @@
+# Start the FastAPI server (Windows). Serves the app at http://localhost:8000
+$ErrorActionPreference = "Stop"
+$root = Split-Path -Parent $PSScriptRoot
+$backend = Join-Path $root "backend"
+$proc = Start-Process -FilePath "uv" `
+  -ArgumentList "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000" `
+  -WorkingDirectory $backend -PassThru
+$proc.Id | Out-File -FilePath (Join-Path $PSScriptRoot ".server.pid") -Encoding ascii
+Write-Host "Server started (PID $($proc.Id)) on http://localhost:8000"
