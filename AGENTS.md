@@ -15,22 +15,22 @@ For the MVP, there will only be a user sign in (hardcoded to 'user' and 'passwor
 
 For the MVP, there will only be 1 Kanban board per signed in user.
 
-For the MVP, this will run locally (in a docker container)
+For the MVP, this will run locally.
 
 ## Technical Decisions
 
 - NextJS frontend
 - Python FastAPI backend, including serving the static NextJS site at /
-- Everything packaged into a Docker container
-- Use "uv" as the package manager for python in the Docker container
-- Use OpenRouter for the AI calls. An OPENROUTER_API_KEY is in .env in the project root
-- Use `openai/gpt-oss-120b` as the model
+- Run locally with no containerization
+- Use "uv" as the package manager for python
+- Use OpenAI for the AI calls. An OPENAI_API_KEY is in .env in the project root
+- Use `gpt-4o-mini` as the model
 - Use SQLLite local database for the database, creating a new db if it doesn't exist
 - Start and Stop server scripts for Mac, PC, Linux in scripts/
 
 ## Starting Point
 
-A working MVP of the frontend has been built and is already in frontend. This is not yet designed for the Docker setup. It's a pure frontend-only demo.
+A working MVP of the frontend has been built and is already in frontend. It's a pure frontend-only demo.
 
 ## Color Scheme
 
