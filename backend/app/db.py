@@ -12,6 +12,9 @@ from app.seed import SEED_BOARD
 
 DB_PATH = Path(os.getenv("PM_DB_PATH", BACKEND_DIR / "app.db"))
 
+DEFAULT_USERNAME = "user"
+DEFAULT_PASSWORD = "password"
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,8 +62,8 @@ def _migrate(conn: sqlite3.Connection) -> None:
             "ALTER TABLE users ADD COLUMN password_hash TEXT NOT NULL DEFAULT ''"
         )
         conn.execute(
-            "UPDATE users SET password_hash = ? WHERE username = 'user'",
-            (hash_password("password"),),
+            "UPDATE users SET password_hash = ? WHERE username = ?",
+            (hash_password(DEFAULT_PASSWORD), DEFAULT_USERNAME),
         )
 
 
@@ -82,9 +85,11 @@ def create_user(conn: sqlite3.Connection, username: str, password_hash: str) -> 
 
 def seed(conn: sqlite3.Connection) -> None:
     """Insert the default user and starter board if not already present."""
-    if conn.execute("SELECT 1 FROM users WHERE username = ?", ("user",)).fetchone():
+    if conn.execute(
+        "SELECT 1 FROM users WHERE username = ?", (DEFAULT_USERNAME,)
+    ).fetchone():
         return
-    create_user(conn, "user", hash_password("password"))
+    create_user(conn, DEFAULT_USERNAME, hash_password(DEFAULT_PASSWORD))
 
 
 def get_user(conn: sqlite3.Connection, username: str) -> sqlite3.Row | None:

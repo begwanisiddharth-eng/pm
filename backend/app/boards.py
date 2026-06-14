@@ -1,6 +1,5 @@
 """Board CRUD routes, scoped to the authenticated user."""
 
-import json
 import sqlite3
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -46,6 +45,16 @@ def _owned_board(conn: sqlite3.Connection, board_id: int, user: str) -> sqlite3.
     return row
 
 
+def _write_board(conn: sqlite3.Connection, board_id: int, data: BoardData) -> None:
+    """Validate and persist board data for an already-owned board."""
+    validate_board_data(data)
+    conn.execute(
+        "UPDATE boards SET data = ?, updated_at = ? WHERE id = ?",
+        (data.model_dump_json(), db_module.now(), board_id),
+    )
+    conn.commit()
+
+
 @router.get("")
 def list_boards(
     user: str = Depends(get_current_user),
@@ -84,7 +93,11 @@ def get_board(
     conn: sqlite3.Connection = Depends(get_db),
 ) -> Board:
     row = _owned_board(conn, board_id, user)
-    return Board(id=row["id"], title=row["title"], data=json.loads(row["data"]))
+    return Board(
+        id=row["id"],
+        title=row["title"],
+        data=BoardData.model_validate_json(row["data"]),
+    )
 
 
 @router.put("/{board_id}")
@@ -94,13 +107,8 @@ def update_board(
     user: str = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db),
 ) -> Board:
-    validate_board_data(data)
     row = _owned_board(conn, board_id, user)
-    conn.execute(
-        "UPDATE boards SET data = ?, updated_at = ? WHERE id = ?",
-        (data.model_dump_json(), db_module.now(), board_id),
-    )
-    conn.commit()
+    _write_board(conn, board_id, data)
     return Board(id=board_id, title=row["title"], data=data)
 
 
@@ -123,17 +131,12 @@ def chat(
     conn: sqlite3.Connection = Depends(get_db),
 ) -> ChatResponse:
     row = _owned_board(conn, board_id, user)
-    board = BoardData(**json.loads(row["data"]))
+    board = BoardData.model_validate_json(row["data"])
 
     result = chat_about_board(board, payload.history, payload.message)
     if result.board is None:
         return ChatResponse(reply=result.reply, board=None)
 
     updated = result.board.to_board_data()
-    validate_board_data(updated)
-    conn.execute(
-        "UPDATE boards SET data = ?, updated_at = ? WHERE id = ?",
-        (updated.model_dump_json(), db_module.now(), board_id),
-    )
-    conn.commit()
+    _write_board(conn, board_id, updated)
     return ChatResponse(reply=result.reply, board=updated)

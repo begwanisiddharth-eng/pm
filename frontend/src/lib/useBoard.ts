@@ -3,7 +3,6 @@
 import {
   useCallback,
   useEffect,
-  useRef,
   useState,
   type SetStateAction,
 } from "react";
@@ -21,7 +20,6 @@ export function useBoard() {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const lastSaved = useRef<BoardData | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -33,7 +31,6 @@ export function useBoard() {
       }
       setBoardId(full.id);
       setBoardState(full.data);
-      lastSaved.current = full.data;
       setDirty(false);
     })();
     return () => {
@@ -48,7 +45,6 @@ export function useBoard() {
 
   // Apply a board the server already persisted (e.g. an AI update): stays clean.
   const applyServerBoard = useCallback((next: BoardData) => {
-    lastSaved.current = next;
     setBoardState(next);
     setDirty(false);
   }, []);
@@ -60,7 +56,6 @@ export function useBoard() {
     setSaving(true);
     try {
       await updateBoard(boardId, board);
-      lastSaved.current = board;
       setDirty(false);
       setError("");
     } catch {
