@@ -12,7 +12,9 @@ test("edits a card's title via the edit form", async ({ page }) => {
   await expect(firstColumn.getByText("Edited via e2e")).toBeVisible();
 });
 
-test("logging out with unsaved changes prompts to save", async ({ page }) => {
+test("logging out with unsaved changes shows a custom in-app prompt", async ({
+  page,
+}) => {
   await login(page);
 
   await page
@@ -21,14 +23,16 @@ test("logging out with unsaved changes prompts to save", async ({ page }) => {
     .getByLabel("Column title")
     .fill("Unsaved edit");
 
-  let dialogMessage = "";
-  page.once("dialog", (dialog) => {
-    dialogMessage = dialog.message();
-    dialog.dismiss();
-  });
+  await page.getByRole("button", { name: "Log out", exact: true }).click();
 
-  await page.getByRole("button", { name: /log out/i }).click();
+  // Custom dialog, not the native browser confirm.
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /unsaved changes/i })
+  ).toBeVisible();
 
-  expect(dialogMessage).toContain("unsaved changes");
+  await page
+    .getByRole("button", { name: /log out without saving/i })
+    .click();
   await expect(page.getByRole("button", { name: /^sign in$/i })).toBeVisible();
 });

@@ -342,3 +342,16 @@ Tests:
 Tests:
 - [x] Frontend unit: editing a card updates its title and details
 - [x] e2e: edit a card and see the new title/details
+
+---
+
+## UI refinements (round 2)
+
+- [x] Chat assistant: increase height and reduce width by ~1.5 cm
+      (340px -> ~284px) so columns get more room
+- [x] Widen the columns and slightly reduce the gap between them
+- [x] Fix Edit/Remove buttons overflowing the side of narrow cards
+      (let the card text shrink with `min-w-0`)
+- [x] Replace the native logout confirm (browser "localhost:8000 says...") with a
+      custom in-app unsaved-changes dialog
+- [x] Update the unsaved-changes e2e to drive the custom dialog

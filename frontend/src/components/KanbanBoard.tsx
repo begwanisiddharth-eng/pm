@@ -23,16 +23,24 @@ export const KanbanBoard = () => {
     useBoard();
   const { logout } = useAuth();
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const handleLogout = async () => {
     if (dirty) {
-      const saveFirst = window.confirm(
-        "You have unsaved changes. Save before logging out?"
-      );
-      if (saveFirst) {
-        await save();
-      }
+      setConfirmLogout(true);
+      return;
     }
+    await logout();
+  };
+
+  const saveAndLogout = async () => {
+    setConfirmLogout(false);
+    await save();
+    await logout();
+  };
+
+  const logoutWithoutSaving = async () => {
+    setConfirmLogout(false);
     await logout();
   };
 
@@ -155,6 +163,48 @@ export const KanbanBoard = () => {
         </button>
       </div>
 
+      {confirmLogout && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Unsaved changes"
+          className="fixed inset-0 z-[60] grid place-items-center bg-[rgba(3,33,71,0.4)] px-6"
+        >
+          <div className="w-full max-w-sm rounded-3xl border border-[var(--stroke)] bg-white p-6 shadow-[var(--shadow)]">
+            <h2 className="font-display text-lg font-semibold text-[var(--navy-dark)]">
+              Unsaved changes
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--gray-text)]">
+              You have unsaved changes. Would you like to save them before logging
+              out?
+            </p>
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmLogout(false)}
+                className="rounded-full border border-[var(--stroke)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--gray-text)] transition hover:text-[var(--navy-dark)]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={logoutWithoutSaving}
+                className="rounded-full border border-[var(--stroke)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--navy-dark)] transition hover:border-[var(--primary-blue)]"
+              >
+                Log out without saving
+              </button>
+              <button
+                type="button"
+                onClick={saveAndLogout}
+                className="rounded-full bg-[var(--secondary-purple)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:brightness-110"
+              >
+                Save and log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="relative mx-auto flex min-h-screen max-w-[1500px] flex-col gap-10 px-6 pb-16 pt-12">
         {error && (
           <div
@@ -198,8 +248,8 @@ export const KanbanBoard = () => {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-6">
-            <section className="grid flex-1 grid-cols-5 gap-6">
+          <div className="flex gap-5">
+            <section className="grid flex-1 grid-cols-5 gap-4">
               {board.columns.map((column) => (
                 <KanbanColumn
                   key={column.id}

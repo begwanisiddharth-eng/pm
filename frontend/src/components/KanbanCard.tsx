@@ -93,33 +93,29 @@ export const KanbanCard = ({ card, onEdit, onDelete }: KanbanCardProps) => {
       {...listeners}
       data-testid={`card-${card.id}`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h4 className="font-display text-base font-semibold text-[var(--navy-dark)]">
-            {card.title}
-          </h4>
-          <p className="mt-2 text-sm leading-6 text-[var(--gray-text)]">
-            {card.details}
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-1">
-          <button
-            type="button"
-            onClick={startEdit}
-            className="rounded-full border border-transparent px-2 py-1 text-xs font-semibold text-[var(--primary-blue)] transition hover:border-[var(--stroke)]"
-            aria-label={`Edit ${card.title}`}
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(card.id)}
-            className="rounded-full border border-transparent px-2 py-1 text-xs font-semibold text-[var(--gray-text)] transition hover:border-[var(--stroke)] hover:text-[var(--navy-dark)]"
-            aria-label={`Delete ${card.title}`}
-          >
-            Remove
-          </button>
-        </div>
+      <h4 className="font-display text-base font-semibold break-words text-[var(--navy-dark)]">
+        {card.title}
+      </h4>
+      <p className="mt-2 text-sm leading-6 break-words text-[var(--gray-text)]">
+        {card.details}
+      </p>
+      <div className="mt-3 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={startEdit}
+          className="rounded-full border border-[var(--stroke)] px-3 py-1 text-xs font-semibold text-[var(--primary-blue)] transition hover:border-[var(--primary-blue)]"
+          aria-label={`Edit ${card.title}`}
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          onClick={() => onDelete(card.id)}
+          className="rounded-full border border-[var(--stroke)] px-3 py-1 text-xs font-semibold text-[var(--gray-text)] transition hover:border-[var(--navy-dark)] hover:text-[var(--navy-dark)]"
+          aria-label={`Delete ${card.title}`}
+        >
+          Remove
+        </button>
       </div>
     </article>
   );

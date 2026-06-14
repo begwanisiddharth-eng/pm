@@ -44,7 +44,7 @@ export const ChatSidebar = ({ boardId, onBoardUpdate }: ChatSidebarProps) => {
 
   return (
     <aside
-      className="flex h-[360px] w-[340px] shrink-0 flex-col self-start rounded-3xl border border-[var(--stroke)] bg-white shadow-[var(--shadow)]"
+      className="flex h-[480px] w-[284px] shrink-0 flex-col self-start rounded-3xl border border-[var(--stroke)] bg-white shadow-[var(--shadow)]"
       aria-label="AI assistant"
     >
       <header className="border-b border-[var(--stroke)] px-4 py-3">
