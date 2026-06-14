@@ -196,17 +196,17 @@ SQLite; failures surface to the user and do not corrupt state.
 
 Goal: backend can call OpenAI; verify with a simple "2+2" test.
 
-- [ ] Add `openai` dependency
-- [ ] AI client module reading `OPENAI_API_KEY`; model `gpt-4o-mini`
-- [ ] `POST /api/ai/ping` (or a test) that asks "what is 2+2" and returns the
-      answer
-- [ ] Clear error if API key missing/invalid (no key leakage in logs)
+- [x] Add `openai` dependency
+- [x] AI client module (`app/ai.py`) reading `OPENAI_API_KEY`; model `gpt-4o-mini`
+- [x] `ask()` helper that asks "what is 2+2" and returns the answer (covered by a
+      live test rather than a standalone ping route)
+- [x] Clear error if API key missing/invalid (no key leakage in logs)
 
 Tests:
-- [ ] Unit: AI client builds the request correctly (mocked OpenAI client)
-- [ ] Unit: missing key path returns a clear error
-- [ ] Optional live test (marked, skipped by default) hitting real OpenAI for
-      "2+2" returns "4"
+- [x] Unit: AI client builds the request correctly (mocked OpenAI client)
+- [x] Unit: missing key path returns a clear error
+- [x] Live test (marked `live`, deselected by default) hitting real OpenAI for
+      "2+2" returns "4" - verified passing
 
 Success criteria: with a valid key, the 2+2 call returns 4; without a key, a
 clear error is returned; no secrets logged.
@@ -219,22 +219,22 @@ Goal: AI always receives the board JSON + the user's question + conversation
 history, and responds with Structured Outputs containing a user-facing reply and
 an optional board update.
 
-- [ ] Define the structured response schema: `{ reply: str, board: BoardData |
-      null }` (Structured Outputs / JSON schema)
-- [ ] `POST /api/boards/{board_id}/chat` accepting `{ message, history }`;
+- [x] Define the structured response schema: `{ reply: str, board: AIBoard |
+      null }` (cards as a list for Structured Outputs; converted to BoardData)
+- [x] `POST /api/boards/{board_id}/chat` accepting `{ message, history }`;
       loads board, calls `gpt-4o-mini` with board JSON + history + message
-- [ ] If the model returns a board update: validate it, persist via the same
+- [x] If the model returns a board update: validate it, persist via the same
       board-write path, and return it
-- [ ] Return `{ reply, board }` to the client; never persist an invalid board
+- [x] Return `{ reply, board }` to the client; never persist an invalid board
 
 Tests:
-- [ ] Unit: prompt assembly includes board JSON, history, and message
-- [ ] Unit (mocked OpenAI): reply-only response leaves board unchanged
-- [ ] Unit (mocked OpenAI): board-update response validates and persists
-- [ ] Unit: invalid board update from model is rejected, board unchanged, error
+- [x] Unit: prompt assembly includes board JSON, history, and message
+- [x] Unit (mocked OpenAI): reply-only response leaves board unchanged
+- [x] Unit (mocked OpenAI): board-update response validates and persists
+- [x] Unit: invalid board update from model is rejected, board unchanged, error
       surfaced
-- [ ] Auth: chat route requires session and board ownership
-- [ ] Optional live test (marked) for a simple add-a-card instruction
+- [x] Auth: chat route requires session and board ownership
+- [x] Live test (marked) for a simple add-a-card instruction - verified passing
 
 Success criteria: chat endpoint reliably returns structured replies; valid board
 updates persist and invalid ones are rejected; board ownership enforced.

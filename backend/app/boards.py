@@ -6,9 +6,17 @@ import sqlite3
 from fastapi import APIRouter, Depends, HTTPException
 
 from app import db as db_module
+from app.ai import chat_about_board
 from app.auth import get_current_user
 from app.db import get_db
-from app.models import Board, BoardCreate, BoardData, BoardSummary
+from app.models import (
+    Board,
+    BoardCreate,
+    BoardData,
+    BoardSummary,
+    ChatRequest,
+    ChatResponse,
+)
 
 router = APIRouter(prefix="/api/boards")
 
@@ -105,3 +113,27 @@ def delete_board(
     _owned_board(conn, board_id, user)
     conn.execute("DELETE FROM boards WHERE id = ?", (board_id,))
     conn.commit()
+
+
+@router.post("/{board_id}/chat")
+def chat(
+    board_id: int,
+    payload: ChatRequest,
+    user: str = Depends(get_current_user),
+    conn: sqlite3.Connection = Depends(get_db),
+) -> ChatResponse:
+    row = _owned_board(conn, board_id, user)
+    board = BoardData(**json.loads(row["data"]))
+
+    result = chat_about_board(board, payload.history, payload.message)
+    if result.board is None:
+        return ChatResponse(reply=result.reply, board=None)
+
+    updated = result.board.to_board_data()
+    validate_board_data(updated)
+    conn.execute(
+        "UPDATE boards SET data = ?, updated_at = ? WHERE id = ?",
+        (updated.model_dump_json(), db_module.now(), board_id),
+    )
+    conn.commit()
+    return ChatResponse(reply=result.reply, board=updated)
