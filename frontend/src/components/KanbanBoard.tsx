@@ -13,11 +13,12 @@ import {
 } from "@dnd-kit/core";
 import { KanbanColumn } from "@/components/KanbanColumn";
 import { KanbanCardPreview } from "@/components/KanbanCardPreview";
+import { ChatSidebar } from "@/components/ChatSidebar";
 import { createId, moveCard } from "@/lib/kanban";
 import { useBoard } from "@/lib/useBoard";
 
 export const KanbanBoard = () => {
-  const { board, setBoard, error } = useBoard();
+  const { board, boardId, setBoard, applyServerBoard, error } = useBoard();
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -173,6 +174,10 @@ export const KanbanBoard = () => {
           </DragOverlay>
         </DndContext>
       </main>
+
+      {boardId !== null && (
+        <ChatSidebar boardId={boardId} onBoardUpdate={applyServerBoard} />
+      )}
     </div>
   );
 };

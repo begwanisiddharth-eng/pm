@@ -246,20 +246,20 @@ updates persist and invalid ones are rejected; board ownership enforced.
 Goal: a polished chat sidebar; the AI can update the board via Structured
 Outputs, and the UI refreshes automatically when it does.
 
-- [ ] Sidebar chat widget (matches color scheme: yellow `#ecad0a`, blue
+- [x] Sidebar chat widget (matches color scheme: yellow `#ecad0a`, blue
       `#209dd7`, purple `#753991`, navy `#032147`, gray `#888888`)
-- [ ] Message list, input, send; shows user + AI messages; loading state
-- [ ] Send `{ message, history }` to the chat endpoint; append AI reply
-- [ ] When response includes a board update, replace board state so the Kanban
-      refreshes automatically
-- [ ] Keep conversation history client-side and send it each request
+- [x] Message list, input, send; shows user + AI messages; loading state
+- [x] Send `{ message, history }` to the chat endpoint; append AI reply
+- [x] When response includes a board update, replace board state (via
+      `applyServerBoard`) so the Kanban refreshes automatically
+- [x] Keep conversation history client-side and send it each request
 
 Tests:
-- [ ] Frontend unit: chat widget renders, sends message, appends reply (mocked
+- [x] Frontend unit: chat widget renders, sends message, appends reply (mocked
       API); board refreshes when response includes a board
-- [ ] e2e: open sidebar, send a message, see a reply; an instruction that adds a
-      card causes the card to appear without manual refresh (mocked or live AI)
-- [ ] Regression: existing board e2e (drag/add/rename) still pass with sidebar
+- [x] e2e: open sidebar, send a message, see a reply; the update adds a card that
+      appears without manual refresh (chat backend stubbed for determinism)
+- [x] Regression: existing board e2e (drag/add/rename) still pass with sidebar
 
 Success criteria: users can chat with the AI; AI-driven board changes appear
 immediately and persist; existing board functionality is unaffected.

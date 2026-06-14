@@ -8,6 +8,10 @@ export type BoardSummary = { id: number; title: string };
 
 export type Board = { id: number; title: string; data: BoardData };
 
+export type ChatMessage = { role: string; content: string };
+
+export type ChatResult = { reply: string; board: BoardData | null };
+
 export async function getMe(): Promise<User | null> {
   const res = await fetch("/api/me", { credentials: "include" });
   if (res.status === 401) {
@@ -64,6 +68,23 @@ export async function updateBoard(id: number, data: BoardData): Promise<Board> {
   });
   if (!res.ok) {
     throw new Error("Failed to save board");
+  }
+  return res.json();
+}
+
+export async function chatWithBoard(
+  boardId: number,
+  message: string,
+  history: ChatMessage[]
+): Promise<ChatResult> {
+  const res = await fetch(`/api/boards/${boardId}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ message, history }),
+  });
+  if (!res.ok) {
+    throw new Error("Chat request failed");
   }
   return res.json();
 }

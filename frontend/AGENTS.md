@@ -93,11 +93,24 @@ Note: Playwright e2e tests live in `tests/` and are excluded from Vitest.
 - `test:e2e` - Playwright
 - `test:all` - unit then e2e
 
-## Notes for later parts
+## Backend integration
 
-- Static export: the app will be built with `output: "export"` and served by
-  FastAPI at `/`; Google fonts are fetched at build time, which is fine for
-  static export.
-- Persistence: keep `src/lib/kanban.ts` pure; add an API client and wire
-  `KanbanBoard` to fetch/save `BoardData` via the board-scoped backend API.
-- Auth and the AI chat sidebar are added in later parts.
+- Static export (`output: "export"`) served by FastAPI at `/`; `next dev`
+  proxies `/api` to the backend (port 8000).
+- `src/lib/api.ts` - fetch client (cookie credentials): login/logout/me, board
+  CRUD, and `chatWithBoard`.
+- `src/lib/useBoard.ts` - loads the first board, debounced autosave with
+  rollback on failure, and `applyServerBoard` for AI updates the server already
+  persisted. `src/lib/kanban.ts` stays pure.
+- `AuthGate` gates the board behind login; `LoginForm` signs in.
+- `ChatSidebar` - AI assistant panel; sends `{ message, history }` to
+  `/api/boards/{id}/chat` and applies any returned board update so the Kanban
+  refreshes automatically.
+
+## Tests added
+
+- Unit: `api.test.ts`, `useBoard.test.ts`, `LoginForm.test.tsx`,
+  `ChatSidebar.test.tsx` (api/backend calls are mocked).
+- e2e (`tests/`): `auth`, `kanban`, `persistence`, `chat`. The e2e database is
+  reset by the `test:e2e` script; the chat backend is stubbed via route
+  interception for determinism.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getBoard, getBoards, updateBoard } from "@/lib/api";
 import type { BoardData } from "@/lib/kanban";
 
@@ -49,5 +49,12 @@ export function useBoard() {
     return () => clearTimeout(handle);
   }, [board, boardId]);
 
-  return { board, setBoard, error };
+  // Apply a board the server already persisted (e.g. an AI update) without
+  // triggering another save.
+  const applyServerBoard = useCallback((next: BoardData) => {
+    lastSaved.current = next;
+    setBoard(next);
+  }, []);
+
+  return { board, boardId, setBoard, applyServerBoard, error };
 }
