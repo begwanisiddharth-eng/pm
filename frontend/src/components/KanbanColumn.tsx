@@ -42,8 +42,9 @@ export const KanbanColumn = ({
           <input
             value={column.title}
             onChange={(event) => onRename(column.id, event.target.value)}
-            className="mt-3 w-full bg-transparent font-display text-lg font-semibold text-[var(--navy-dark)] outline-none"
+            className="mt-3 w-full cursor-text rounded-lg border border-transparent bg-transparent px-2 py-1 font-display text-lg font-semibold text-[var(--navy-dark)] outline-none transition hover:border-[var(--stroke)] hover:bg-[var(--surface)] focus:border-[var(--primary-blue)] focus:bg-white"
             aria-label="Column title"
+            title="Click to rename this column"
           />
         </div>
       </div>

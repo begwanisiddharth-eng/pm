@@ -177,3 +177,6 @@ cython_debug/
 
 # Local server pid file
 scripts/.server.pid
+
+# playwright mcp artifacts
+.playwright-mcp/

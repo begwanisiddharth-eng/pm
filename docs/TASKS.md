@@ -125,13 +125,13 @@ across refresh and clear on logout; all auth tests pass.
 
 Goal: documented SQLite schema storing each board as JSON, multi-board ready.
 
-- [ ] Write `docs/DATABASE.md`: tables `users(id, username, ...)`,
+- [x] Write `docs/DATABASE.md`: tables `users(id, username, ...)`,
       `boards(id, user_id, title, data JSON, created_at, updated_at)`;
       explain JSON blob choice and multi-board direction
-- [ ] Define the `BoardData` JSON shape (matches frontend `src/lib/kanban.ts`)
-- [ ] Document seeding: default user `user`; one starter board from the demo's
+- [x] Define the `BoardData` JSON shape (matches frontend `src/lib/kanban.ts`)
+- [x] Document seeding: default user `user`; one starter board from the demo's
       `initialData`
-- [ ] User sign-off on schema
+- [x] User sign-off on schema
 
 Success criteria: `docs/DATABASE.md` is approved; JSON shape matches the
 frontend model exactly.
