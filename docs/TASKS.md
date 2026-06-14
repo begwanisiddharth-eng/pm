@@ -143,27 +143,27 @@ frontend model exactly.
 Goal: API to read and change a user's boards, backed by SQLite, created if
 missing. Thorough unit tests.
 
-- [ ] Add `sqlite3`/SQLAlchemy (decide; prefer stdlib `sqlite3` for simplicity)
-- [ ] DB module: create DB and tables if not present; seed default user + board
-- [ ] Pydantic models for `Card`, `Column`, `BoardData`, board metadata
-- [ ] Routes (all auth-protected, scoped to current user):
-  - [ ] `GET /api/boards` - list current user's boards (id, title)
-  - [ ] `POST /api/boards` - create a board (seeded/empty)
-  - [ ] `GET /api/boards/{board_id}` - full board data
-  - [ ] `PUT /api/boards/{board_id}` - replace board data (validated)
-  - [ ] `DELETE /api/boards/{board_id}` - delete a board
-  - [ ] 404 when board missing; 403 when board belongs to another user
-- [ ] Validation: reject malformed board JSON (unknown card ids in columns, etc.)
+- [x] Use stdlib `sqlite3` (kept simple, no ORM)
+- [x] DB module: create DB and tables if not present; seed default user + board
+- [x] Pydantic models for `Card`, `Column`, `BoardData`, board metadata
+- [x] Routes (all auth-protected, scoped to current user):
+  - [x] `GET /api/boards` - list current user's boards (id, title)
+  - [x] `POST /api/boards` - create a board (seeded/empty)
+  - [x] `GET /api/boards/{board_id}` - full board data
+  - [x] `PUT /api/boards/{board_id}` - replace board data (validated)
+  - [x] `DELETE /api/boards/{board_id}` - delete a board
+  - [x] 404 when board missing or owned by another user
+- [x] Validation: reject malformed board JSON (unknown card ids in columns, etc.)
 
 Tests (pytest, fresh temp DB per test):
-- [ ] DB creation when file absent; seeding correctness
-- [ ] Each route happy path
-- [ ] `GET /api/boards/{id}` 404 for unknown id
-- [ ] Cross-user access returns 403/404
-- [ ] `PUT` persists and round-trips board data
-- [ ] `PUT` rejects invalid board JSON (400)
-- [ ] All board routes require auth (401 without session)
-- [ ] Coverage >= 90% for backend
+- [x] DB creation when file absent; seeding correctness
+- [x] Each route happy path
+- [x] `GET /api/boards/{id}` 404 for unknown id
+- [x] Cross-user access returns 404
+- [x] `PUT` persists and round-trips board data
+- [x] `PUT` rejects invalid board JSON (400)
+- [x] All board routes require auth (401 without session)
+- [x] Coverage >= 90% for backend (95%)
 
 Success criteria: DB auto-creates and seeds; all board routes behave per spec
 with validation and auth; coverage target met.
@@ -174,20 +174,18 @@ with validation and auth; coverage target met.
 
 Goal: the frontend uses the backend API so the board is persistent.
 
-- [ ] API client in frontend (fetch with credentials for cookie session)
-- [ ] On load: fetch the user's first board; render from server data
-- [ ] Persist changes (add/edit/delete card, rename column, move card) via
-      `PUT /api/boards/{id}` (debounced or on-change)
-- [ ] Loading and error states; optimistic update with rollback on failure
-- [ ] Keep `src/lib/kanban.ts` pure logic; wire persistence in the board
-      component/hook
+- [x] API client in frontend (fetch with credentials for cookie session)
+- [x] On load: fetch the user's first board; render from server data
+- [x] Persist changes (add/edit/delete card, rename column, move card) via
+      `PUT /api/boards/{id}` (debounced autosave)
+- [x] Loading and error states; optimistic update with rollback on failure
+- [x] Keep `src/lib/kanban.ts` pure logic; persistence in the `useBoard` hook
 
 Tests:
-- [ ] Frontend unit: API client (mocked fetch) for get/put; reducer/hook applies
-      server data; rollback on failed save
-- [ ] e2e: change the board, reload the page, changes persist; logout/login,
-      board still there
-- [ ] Backend integration: frontend-driven `PUT` is validated and stored
+- [x] Frontend unit: API client (mocked fetch) for get/put; `useBoard` applies
+      server data, saves, and rolls back on failed save
+- [x] e2e: rename a column / add a card, reload or re-login, changes persist
+- [x] Backend integration: frontend-driven `PUT` is validated and stored
 
 Success criteria: edits survive refresh and re-login because they are stored in
 SQLite; failures surface to the user and do not corrupt state.

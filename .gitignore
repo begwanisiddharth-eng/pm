@@ -180,3 +180,6 @@ scripts/.server.pid
 
 # playwright mcp artifacts
 .playwright-mcp/
+
+# sqlite db files
+backend/*.db
