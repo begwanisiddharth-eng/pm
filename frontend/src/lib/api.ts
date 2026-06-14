@@ -39,6 +39,25 @@ export async function login(username: string, password: string): Promise<User> {
   return res.json();
 }
 
+export async function register(
+  username: string,
+  password: string
+): Promise<User> {
+  const res = await fetch("/api/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username, password }),
+  });
+  if (res.status === 409) {
+    throw new Error("That username is already taken");
+  }
+  if (!res.ok) {
+    throw new Error("Sign up failed");
+  }
+  return res.json();
+}
+
 export async function logout(): Promise<void> {
   await fetch("/api/logout", { method: "POST", credentials: "include" });
 }

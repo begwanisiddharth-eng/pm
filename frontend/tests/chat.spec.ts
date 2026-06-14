@@ -30,7 +30,6 @@ test("assistant replies and updates the board without a reload", async ({
     });
   });
 
-  await page.getByRole("button", { name: /ask the assistant/i }).click();
   await page.getByLabel(/message the assistant/i).fill("Please add a card");
   await page.getByRole("button", { name: /send/i }).click();
 

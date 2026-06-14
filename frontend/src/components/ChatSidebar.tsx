@@ -12,7 +12,6 @@ type ChatSidebarProps = {
 };
 
 export const ChatSidebar = ({ boardId, onBoardUpdate }: ChatSidebarProps) => {
-  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,46 +42,25 @@ export const ChatSidebar = ({ boardId, onBoardUpdate }: ChatSidebarProps) => {
     }
   };
 
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 rounded-full bg-[var(--secondary-purple)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow)] transition hover:brightness-110"
-      >
-        Ask the assistant
-      </button>
-    );
-  }
-
   return (
     <aside
-      className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-[380px] flex-col border-l border-[var(--stroke)] bg-white shadow-[var(--shadow)]"
+      className="flex h-[360px] w-[340px] shrink-0 flex-col self-start rounded-3xl border border-[var(--stroke)] bg-white shadow-[var(--shadow)]"
       aria-label="AI assistant"
     >
-      <header className="flex items-center justify-between border-b border-[var(--stroke)] px-5 py-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--gray-text)]">
-            Assistant
-          </p>
-          <h2 className="font-display text-lg font-semibold text-[var(--navy-dark)]">
-            Board copilot
-          </h2>
-        </div>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="rounded-full border border-[var(--stroke)] px-3 py-1 text-xs font-semibold text-[var(--gray-text)] transition hover:text-[var(--navy-dark)]"
-          aria-label="Close assistant"
-        >
-          Close
-        </button>
+      <header className="border-b border-[var(--stroke)] px-4 py-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--gray-text)]">
+          Assistant
+        </p>
+        <h2 className="font-display text-base font-semibold text-[var(--navy-dark)]">
+          Board copilot
+        </h2>
       </header>
 
-      <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
+      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
         {messages.length === 0 && (
           <p className="text-sm leading-6 text-[var(--gray-text)]">
-            Ask me to add, move, or rename things, or just ask about the board.
+            Ask me to add, move, rename, or edit things, or just ask about the
+            board.
           </p>
         )}
         {messages.map((message, index) => (
@@ -90,15 +68,15 @@ export const ChatSidebar = ({ boardId, onBoardUpdate }: ChatSidebarProps) => {
             key={index}
             className={
               message.role === "user"
-                ? "ml-auto max-w-[85%] rounded-2xl bg-[var(--primary-blue)] px-4 py-2 text-sm text-white"
-                : "mr-auto max-w-[85%] rounded-2xl bg-[var(--surface)] px-4 py-2 text-sm text-[var(--navy-dark)]"
+                ? "ml-auto max-w-[85%] rounded-2xl bg-[var(--primary-blue)] px-3 py-2 text-sm text-white"
+                : "mr-auto max-w-[85%] rounded-2xl bg-[var(--surface)] px-3 py-2 text-sm text-[var(--navy-dark)]"
             }
           >
             {message.content}
           </div>
         ))}
         {loading && (
-          <div className="mr-auto max-w-[85%] rounded-2xl bg-[var(--surface)] px-4 py-2 text-sm text-[var(--gray-text)]">
+          <div className="mr-auto max-w-[85%] rounded-2xl bg-[var(--surface)] px-3 py-2 text-sm text-[var(--gray-text)]">
             Thinking...
           </div>
         )}
@@ -106,14 +84,14 @@ export const ChatSidebar = ({ boardId, onBoardUpdate }: ChatSidebarProps) => {
 
       <form
         onSubmit={handleSend}
-        className="flex items-center gap-2 border-t border-[var(--stroke)] px-4 py-4"
+        className="flex items-center gap-2 border-t border-[var(--stroke)] px-3 py-3"
       >
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Message the assistant"
           aria-label="Message the assistant"
-          className="flex-1 rounded-full border border-[var(--stroke)] bg-white px-4 py-2 text-sm text-[var(--navy-dark)] outline-none transition focus:border-[var(--primary-blue)]"
+          className="min-w-0 flex-1 rounded-full border border-[var(--stroke)] bg-white px-3 py-2 text-sm text-[var(--navy-dark)] outline-none transition focus:border-[var(--primary-blue)]"
         />
         <button
           type="submit"

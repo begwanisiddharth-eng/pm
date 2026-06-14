@@ -1,17 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type SetStateAction,
+} from "react";
 import { getBoard, getBoards, updateBoard } from "@/lib/api";
 import type { BoardData } from "@/lib/kanban";
 
 /**
- * Loads the user's first board and persists changes with a debounced save.
- * Local edits apply immediately; a failed save rolls back to the last saved
- * state and surfaces an error.
+ * Loads the user's board and persists only on explicit save. Local edits mark
+ * the board dirty; `save()` writes to the backend. AI updates applied via
+ * `applyServerBoard` are already persisted server-side and stay clean.
  */
 export function useBoard() {
-  const [board, setBoard] = useState<BoardData | null>(null);
+  const [board, setBoardState] = useState<BoardData | null>(null);
   const [boardId, setBoardId] = useState<number | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const lastSaved = useRef<BoardData | null>(null);
 
@@ -24,37 +32,43 @@ export function useBoard() {
         return;
       }
       setBoardId(full.id);
-      setBoard(full.data);
+      setBoardState(full.data);
       lastSaved.current = full.data;
+      setDirty(false);
     })();
     return () => {
       active = false;
     };
   }, []);
 
-  useEffect(() => {
-    if (board === null || boardId === null || board === lastSaved.current) {
-      return;
-    }
-    const handle = setTimeout(async () => {
-      try {
-        await updateBoard(boardId, board);
-        lastSaved.current = board;
-        setError("");
-      } catch {
-        setError("Failed to save changes");
-        setBoard(lastSaved.current);
-      }
-    }, 400);
-    return () => clearTimeout(handle);
-  }, [board, boardId]);
-
-  // Apply a board the server already persisted (e.g. an AI update) without
-  // triggering another save.
-  const applyServerBoard = useCallback((next: BoardData) => {
-    lastSaved.current = next;
-    setBoard(next);
+  const setBoard = useCallback((value: SetStateAction<BoardData | null>) => {
+    setBoardState(value);
+    setDirty(true);
   }, []);
 
-  return { board, boardId, setBoard, applyServerBoard, error };
+  // Apply a board the server already persisted (e.g. an AI update): stays clean.
+  const applyServerBoard = useCallback((next: BoardData) => {
+    lastSaved.current = next;
+    setBoardState(next);
+    setDirty(false);
+  }, []);
+
+  const save = useCallback(async () => {
+    if (board === null || boardId === null) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateBoard(boardId, board);
+      lastSaved.current = board;
+      setDirty(false);
+      setError("");
+    } catch {
+      setError("Failed to save changes");
+    } finally {
+      setSaving(false);
+    }
+  }, [board, boardId]);
+
+  return { board, boardId, setBoard, applyServerBoard, save, dirty, saving, error };
 }

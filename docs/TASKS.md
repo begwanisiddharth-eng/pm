@@ -275,3 +275,70 @@ immediately and persist; existing board functionality is unaffected.
 - [ ] Backend coverage >= 90%; frontend unit + e2e green
 - [ ] App runs locally via start/stop scripts on the dev OS
 - [ ] `README.md`, `AGENTS.md` files, `docs/DATABASE.md` are accurate and concise
+
+---
+
+## Enhancements
+
+Post-MVP changes. E1 (always-visible assistant) is a direct UI change; E2-E4 are
+detailed below per the request.
+
+### E1 - Always-visible AI assistant
+
+- [x] Redesign `ChatSidebar` to be always visible (no toggle), fixed height
+      (~3-4 inches), scrollable message list, input pinned at the bottom
+- [x] Place it to the right of the columns; columns stay in one row (no wrap)
+- [x] Update `ChatSidebar` unit test and `chat` e2e (no open/toggle step)
+
+### E2 - Multiple users (single board each)
+
+- [x] DB: add a hashed-password column to `users`; migrate existing DB if needed
+- [x] Password hashing with stdlib `hashlib.pbkdf2_hmac` (per-user salt); never
+      store or log plaintext
+- [x] `POST /api/register` - create user (unique username), hash password, seed
+      one board, log the user in (session). Reject duplicate usernames (409)
+- [x] `POST /api/login` - validate username + password against the database
+      (replace hardcoded check); keep a seeded default `user`/`password` account
+- [x] Each user has exactly one board, seeded on sign-up; no board-management UI
+      (multiple boards per user remain out of scope)
+- [x] Frontend: sign-up screen and a toggle between Log in and Sign up;
+      `api.register`; on success the user's board loads
+- [x] Cross-user isolation still enforced (a user only sees their own board)
+
+Tests:
+- [x] Backend: register success; duplicate username rejected; login with a
+      registered user; login wrong password rejected; password stored hashed
+      (not plaintext); each new user gets their own seeded board; cross-user
+      board access still 404
+- [x] Frontend unit: sign-up form validation/submit and login/sign-up toggle
+- [x] e2e: register a new user, see a fresh board; log out; log back in
+
+### E3 - Explicit save with unsaved-changes guard
+
+- [x] Remove debounced autosave from `useBoard`; track `dirty` state
+- [x] `save()` persists via `PUT` and clears `dirty`; expose `dirty`, `saving`,
+      and `error`; AI updates via `applyServerBoard` are already server-persisted
+      and do not mark dirty
+- [x] Save button to the left of Log Out; disabled when there are no unsaved
+      changes; surfaces save errors
+- [x] Logout guard: if `dirty`, prompt "You have unsaved changes. Save before
+      logging out?" - OK saves then logs out, Cancel logs out without saving
+- [x] Coordinate auth logout and board save (auth context or lifted handler)
+
+Tests:
+- [x] Frontend unit (`useBoard`): edits mark dirty; `save` persists and clears
+      dirty; `applyServerBoard` does not mark dirty
+- [x] e2e: edit + Save + reload persists; edit without Save + reload reverts
+- [x] e2e: logout with unsaved changes shows the prompt; OK saves, Cancel does
+      not
+
+### E4 - Edit a card
+
+- [x] Card Edit control opens a title/details form (consistent with add-card),
+      with Save/Cancel
+- [x] `handleEditCard` updates the card and marks the board dirty
+- [x] Keep `src/lib/kanban.ts` pure
+
+Tests:
+- [x] Frontend unit: editing a card updates its title and details
+- [x] e2e: edit a card and see the new title/details

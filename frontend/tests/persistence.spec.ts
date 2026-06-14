@@ -1,32 +1,42 @@
 import { expect, test } from "@playwright/test";
 import { login } from "./helpers";
 
-test("renaming a column persists across reload", async ({ page }) => {
+const firstColumnTitle = (page: import("@playwright/test").Page) =>
+  page.locator('[data-testid^="column-"]').first().getByLabel("Column title");
+
+test("renaming a column persists after Save and reload", async ({ page }) => {
   await login(page);
 
-  const firstColumnTitle = page
-    .locator('[data-testid^="column-"]')
-    .first()
-    .getByLabel("Column title");
-  await firstColumnTitle.fill("Persisted Column");
-
-  await page.waitForResponse(
+  await firstColumnTitle(page).fill("Persisted Column");
+  const saved = page.waitForResponse(
     (res) =>
       res.url().includes("/api/boards/") &&
       res.request().method() === "PUT" &&
       res.ok()
   );
+  await page.getByRole("button", { name: /^save$/i }).click();
+  await saved;
 
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Kanban Studio" })
   ).toBeVisible();
-  await expect(
-    page.locator('[data-testid^="column-"]').first().getByLabel("Column title")
-  ).toHaveValue("Persisted Column");
+  await expect(firstColumnTitle(page)).toHaveValue("Persisted Column");
 });
 
-test("an added card persists across a fresh login", async ({ page, context }) => {
+test("unsaved edits are discarded on reload", async ({ page }) => {
+  await login(page);
+
+  await firstColumnTitle(page).fill("Temporary name");
+  await page.reload();
+
+  await expect(
+    page.getByRole("heading", { name: "Kanban Studio" })
+  ).toBeVisible();
+  await expect(firstColumnTitle(page)).not.toHaveValue("Temporary name");
+});
+
+test("a saved card persists across a fresh login", async ({ page, context }) => {
   await login(page);
 
   const firstColumn = page.locator('[data-testid^="column-"]').first();
@@ -35,14 +45,15 @@ test("an added card persists across a fresh login", async ({ page, context }) =>
   await firstColumn.getByPlaceholder("Details").fill("Survives re-login.");
   await firstColumn.getByRole("button", { name: /add card/i }).click();
 
-  await page.waitForResponse(
+  const saved = page.waitForResponse(
     (res) =>
       res.url().includes("/api/boards/") &&
       res.request().method() === "PUT" &&
       res.ok()
   );
+  await page.getByRole("button", { name: /^save$/i }).click();
+  await saved;
 
-  // New session: clear cookies and log in again.
   await context.clearCookies();
   await login(page);
 

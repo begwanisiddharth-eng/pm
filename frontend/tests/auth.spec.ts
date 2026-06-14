@@ -18,6 +18,17 @@ test("rejects wrong credentials", async ({ page }) => {
   ).toBeHidden();
 });
 
+test("registers a new user and opens a board", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /create an account/i }).click();
+  await page.getByLabel(/username/i).fill("e2euser");
+  await page.getByLabel(/password/i).fill("e2epass");
+  await page.getByRole("button", { name: /^create account$/i }).click();
+  await expect(
+    page.getByRole("heading", { name: "Kanban Studio" })
+  ).toBeVisible();
+});
+
 test("logs in, persists across refresh, and logs out", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel(/username/i).fill("user");

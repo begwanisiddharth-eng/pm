@@ -11,8 +11,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const openAndSend = async (text: string) => {
-  await userEvent.click(screen.getByRole("button", { name: /ask the assistant/i }));
+const send = async (text: string) => {
   await userEvent.type(screen.getByLabelText(/message the assistant/i), text);
   await userEvent.click(screen.getByRole("button", { name: /send/i }));
 };
@@ -26,7 +25,7 @@ describe("ChatSidebar", () => {
     const onBoardUpdate = vi.fn();
     render(<ChatSidebar boardId={1} onBoardUpdate={onBoardUpdate} />);
 
-    await openAndSend("How many columns?");
+    await send("How many columns?");
 
     expect(screen.getByText("How many columns?")).toBeInTheDocument();
     expect(await screen.findByText("There are 5 columns.")).toBeInTheDocument();
@@ -46,7 +45,7 @@ describe("ChatSidebar", () => {
     const onBoardUpdate = vi.fn();
     render(<ChatSidebar boardId={2} onBoardUpdate={onBoardUpdate} />);
 
-    await openAndSend("Add a card");
+    await send("Add a card");
 
     expect(await screen.findByText("Added a card.")).toBeInTheDocument();
     expect(onBoardUpdate).toHaveBeenCalledWith(updated);

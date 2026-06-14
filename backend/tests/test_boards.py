@@ -80,8 +80,8 @@ def test_cross_user_board_404(
 ) -> None:
     timestamp = db_module.now()
     cursor = db_conn.execute(
-        "INSERT INTO users (username, created_at) VALUES (?, ?)",
-        ("other", timestamp),
+        "INSERT INTO users (username, password_hash, created_at) VALUES (?, ?, ?)",
+        ("other", "x$y", timestamp),
     )
     other_board = db_conn.execute(
         "INSERT INTO boards (user_id, title, data, created_at, updated_at)"
