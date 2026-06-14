@@ -268,13 +268,13 @@ immediately and persist; existing board functionality is unaffected.
 
 ## Definition of done (whole MVP)
 
-- [ ] Login gate works; only authenticated users reach the board
-- [ ] Board is persistent in SQLite (created if absent), multi-board ready
-- [ ] AI chat can create/edit/move cards via Structured Outputs and the UI
+- [x] Login gate works; only authenticated users reach the board
+- [x] Board is persistent in SQLite (created if absent), multi-board ready
+- [x] AI chat can create/edit/move cards via Structured Outputs and the UI
       refreshes automatically
-- [ ] Backend coverage >= 90%; frontend unit + e2e green
-- [ ] App runs locally via start/stop scripts on the dev OS
-- [ ] `README.md`, `AGENTS.md` files, `docs/DATABASE.md` are accurate and concise
+- [x] Backend coverage >= 90%; frontend unit + e2e green
+- [x] App runs locally via start/stop scripts on the dev OS
+- [x] `README.md`, `AGENTS.md` files, `docs/DATABASE.md` are accurate and concise
 
 ---
 

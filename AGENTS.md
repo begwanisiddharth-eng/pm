@@ -11,9 +11,9 @@ This project is building a Project Management App. Key features:
 
 ## Limitations
 
-For the MVP, there will only be a user sign in (hardcoded to 'user' and 'password') but the database will support multiple users for future.
+Users can register and sign in. A default 'user' / 'password' account is seeded; new accounts are created via self-service sign-up (passwords stored hashed).
 
-For the MVP, there will only be 1 Kanban board per signed in user.
+Each signed-in user has exactly 1 Kanban board (multiple boards per user are out of scope).
 
 For the MVP, this will run locally.
 
@@ -26,6 +26,8 @@ For the MVP, this will run locally.
 - Use OpenAI for the AI calls. An OPENAI_API_KEY is in .env in the project root
 - Use `gpt-4o-mini` as the model
 - Use SQLLite local database for the database, creating a new db if it doesn't exist
+- Auth via a signed HTTP-only session cookie; passwords hashed with PBKDF2 (stdlib)
+- Board edits are saved explicitly via a Save button; logging out with unsaved changes prompts to save first
 - Start and Stop server scripts for Mac, PC, Linux in scripts/
 
 ## Starting Point

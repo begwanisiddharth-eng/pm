@@ -97,20 +97,23 @@ Note: Playwright e2e tests live in `tests/` and are excluded from Vitest.
 
 - Static export (`output: "export"`) served by FastAPI at `/`; `next dev`
   proxies `/api` to the backend (port 8000).
-- `src/lib/api.ts` - fetch client (cookie credentials): login/logout/me, board
-  CRUD, and `chatWithBoard`.
-- `src/lib/useBoard.ts` - loads the first board, debounced autosave with
-  rollback on failure, and `applyServerBoard` for AI updates the server already
-  persisted. `src/lib/kanban.ts` stays pure.
-- `AuthGate` gates the board behind login; `LoginForm` signs in.
-- `ChatSidebar` - AI assistant panel; sends `{ message, history }` to
-  `/api/boards/{id}/chat` and applies any returned board update so the Kanban
-  refreshes automatically.
+- `src/lib/api.ts` - fetch client (cookie credentials): register/login/logout/me,
+  board CRUD, and `chatWithBoard`.
+- `src/lib/useBoard.ts` - loads the user's board, tracks `dirty`, and persists
+  only on explicit `save()`; `applyServerBoard` reflects AI updates the server
+  already persisted (stays clean). `src/lib/kanban.ts` stays pure.
+- `AuthGate` gates the board and provides `logout` via context; `AuthPanel`
+  toggles between sign in and self-service sign up.
+- `KanbanBoard` - toolbar with Save (left of Log out) and a custom
+  unsaved-changes dialog on logout; cards support edit via `KanbanCard`.
+- `ChatSidebar` - always-visible AI assistant to the right of the columns; sends
+  `{ message, history }` to `/api/boards/{id}/chat` and applies any returned
+  board update so the Kanban refreshes automatically.
 
 ## Tests added
 
-- Unit: `api.test.ts`, `useBoard.test.ts`, `LoginForm.test.tsx`,
-  `ChatSidebar.test.tsx` (api/backend calls are mocked).
-- e2e (`tests/`): `auth`, `kanban`, `persistence`, `chat`. The e2e database is
-  reset by the `test:e2e` script; the chat backend is stubbed via route
-  interception for determinism.
+- Unit: `api.test.ts`, `useBoard.test.ts`, `AuthPanel.test.tsx`,
+  `ChatSidebar.test.tsx`, `KanbanBoard.test.tsx` (api/backend calls are mocked).
+- e2e (`tests/`): `auth`, `kanban`, `persistence`, `chat`, `enhancements`. The
+  e2e database is reset by the `test:e2e` script; the chat backend is stubbed via
+  route interception for determinism.
