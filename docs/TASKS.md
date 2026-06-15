@@ -321,16 +321,16 @@ Tests:
       and do not mark dirty
 - [x] Save button to the left of Log Out; disabled when there are no unsaved
       changes; surfaces save errors
-- [x] Logout guard: if `dirty`, prompt "You have unsaved changes. Save before
-      logging out?" - OK saves then logs out, Cancel logs out without saving
+- [x] Logout guard: if `dirty`, open a custom dialog "You have unsaved changes..."
+      with Cancel (stay), Log out without saving, and Save and log out
 - [x] Coordinate auth logout and board save (auth context or lifted handler)
 
 Tests:
 - [x] Frontend unit (`useBoard`): edits mark dirty; `save` persists and clears
       dirty; `applyServerBoard` does not mark dirty
 - [x] e2e: edit + Save + reload persists; edit without Save + reload reverts
-- [x] e2e: logout with unsaved changes shows the prompt; OK saves, Cancel does
-      not
+- [x] e2e: logout with unsaved changes shows the dialog; Save and log out
+      persists, Log out without saving does not
 
 ### E4 - Edit a card
 

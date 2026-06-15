@@ -1,9 +1,10 @@
 # Frontend
 
-A Next.js 16 (App Router) + React 19 single-board Kanban demo, styled with
-Tailwind v4 and using `@dnd-kit` for drag and drop. This is currently a pure
-frontend-only demo: all state lives in React, there is no backend or
-persistence yet. Later parts wire it to the FastAPI backend.
+A Next.js 16 (App Router) + React 19 single-board Kanban app, styled with
+Tailwind v4 and using `@dnd-kit` for drag and drop. The board is wired to the
+FastAPI backend: it loads the signed-in user's board, persists edits on explicit
+save, and updates live when the AI assistant changes the board. Built as a
+static export (`output: "export"`) and served by the backend at `/`.
 
 ## Stack
 
@@ -44,25 +45,34 @@ shape and should stay pure as persistence is added.
 
 ## Components - `src/components/`
 
-- `KanbanBoard.tsx` (`"use client"`) - the stateful root. Holds `board`
-  (`BoardData`) in `useState(initialData)` and the active drag id. Sets up
-  `DndContext` (PointerSensor, `closestCorners`) and a `DragOverlay`. Handlers:
+- `KanbanBoard.tsx` (`"use client"`) - the stateful root. Gets `board` and
+  persistence helpers from the `useBoard()` hook (loaded from the backend, not
+  `initialData`) and tracks the active drag id and the logout-confirm dialog.
+  Sets up `DndContext` (PointerSensor, `closestCorners`) and a `DragOverlay`.
+  Handlers:
   - `handleDragStart` / `handleDragEnd` - drag lifecycle; `handleDragEnd` calls
     `moveCard`.
   - `handleRenameColumn(columnId, title)`
   - `handleAddCard(columnId, title, details)` - uses `createId("card")`
+  - `handleEditCard(cardId, title, details)`
   - `handleDeleteCard(columnId, cardId)`
-  Renders a header (title, column chips) and a 5-column grid.
+  Renders a header (title, column chips), a Save / Log out toolbar with a custom
+  unsaved-changes dialog, a 5-column grid, and the `ChatSidebar`.
 - `KanbanColumn.tsx` - a droppable column (`useDroppable`) wrapping a
   `SortableContext` of cards; inline-editable title `<input>`; card count;
   empty-state placeholder; embeds `NewCardForm`. Root has
   `data-testid="column-<id>"`.
-- `KanbanCard.tsx` - a sortable card (`useSortable`) showing title, details, and
-  a Remove button. Root has `data-testid="card-<id>"`.
+- `KanbanCard.tsx` - a sortable card (`useSortable`) showing title and details
+  with Edit and Remove controls; Edit swaps the card to an inline title/details
+  form. Root has `data-testid="card-<id>"`.
 - `KanbanCardPreview.tsx` - a static, non-interactive card used inside the
   `DragOverlay` while dragging.
 - `NewCardForm.tsx` - collapsed "Add a card" button that expands to a
   title/details form; requires a non-empty title; resets on submit/cancel.
+- `AuthGate.tsx` / `AuthPanel.tsx` - gate the board behind sign in; `AuthPanel`
+  toggles between log in and self-service sign up. `AuthGate` exposes the current
+  user and `logout` via context (`useAuth`).
+- `ChatSidebar.tsx` - always-visible AI assistant to the right of the columns.
 
 State flows top-down: `KanbanBoard` owns all data and passes callbacks into
 columns and cards. There is no global store.

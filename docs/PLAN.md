@@ -52,9 +52,9 @@ sign-up. Boards remain one-per-user; multiple boards per user are out of scope.
 
 E3: Explicit save with an unsaved-changes guard. Replace autosave with an
 explicit Save button placed to the left of Log Out. Only saved changes are
-persisted. Logging out with unsaved changes prompts the user: "You have unsaved
-changes. Save before logging out?" - OK saves then logs out; Cancel logs out
-without saving. The guard applies on logout only.
+persisted. Logging out with unsaved changes opens a custom in-app dialog ("You
+have unsaved changes...") with three choices: Cancel (dismiss, stay), Log out
+without saving, and Save and log out. The guard applies on logout only.
 
 E4: Edit a card. Allow editing a card's title and details via an Edit control
 that opens a form, consistent with the add-card form.
