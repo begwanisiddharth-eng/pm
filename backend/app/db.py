@@ -68,7 +68,10 @@ def _migrate(conn: sqlite3.Connection) -> None:
 
 
 def create_user(conn: sqlite3.Connection, username: str, password_hash: str) -> int:
-    """Create a user and seed their single board. Returns the user id."""
+    """Create a user and seed their single board. Returns the user id.
+
+    The caller is responsible for committing the transaction.
+    """
     timestamp = now()
     cursor = conn.execute(
         "INSERT INTO users (username, password_hash, created_at) VALUES (?, ?, ?)",

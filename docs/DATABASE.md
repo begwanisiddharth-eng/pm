@@ -17,15 +17,19 @@ without changing the API shape.
 
 ### `users`
 
-| Column       | Type     | Notes                          |
-| ------------ | -------- | ------------------------------ |
-| `id`         | INTEGER  | Primary key, autoincrement     |
-| `username`   | TEXT     | Unique, not null               |
-| `created_at` | TEXT     | ISO 8601 timestamp             |
+| Column          | Type     | Notes                            |
+| --------------- | -------- | -------------------------------- |
+| `id`            | INTEGER  | Primary key, autoincrement       |
+| `username`      | TEXT     | Unique, not null                 |
+| `password_hash` | TEXT     | Not null, PBKDF2 salted hash     |
+| `created_at`    | TEXT     | ISO 8601 timestamp               |
 
-For the MVP, credentials are hardcoded (`user` / `password`) and authentication
-does not read this table; it exists so multiple users are supported later.
-A password/credential column is intentionally omitted until real auth is added.
+Authentication is database-backed. Passwords are hashed with PBKDF2 (per-user
+salt; see `backend/app/security.py`) and stored in `password_hash`. Login
+verifies the submitted password against this hash; self-service sign-up inserts
+a new user row with a fresh hash. A default `user` / `password` account is
+seeded for convenience. Databases created before this column was added are
+migrated on startup (`_migrate` in `db.py`).
 
 ### `boards`
 

@@ -58,3 +58,23 @@ without saving. The guard applies on logout only.
 
 E4: Edit a card. Allow editing a card's title and details via an Edit control
 that opens a form, consistent with the add-card form.
+
+## Code review
+
+A full code review of the completed MVP was carried out. Findings were
+evaluated and the actionable ones addressed:
+
+- Simplified `moveCard` in `frontend/src/lib/kanban.ts` to look up each column
+  once (removed the redundant id-then-object lookups and the dead second guard).
+- Updated `docs/DATABASE.md` to document the `password_hash` column and the
+  database-backed PBKDF2 login/sign-up flow (was stale after E2).
+- Documented the commit contract on `create_user` in `backend/app/db.py`.
+- Added `frontend/src/components/NewCardForm.test.tsx` covering the open/close
+  toggle and whitespace-title rejection branch.
+
+Several findings were assessed as already-correct or intentionally out of scope:
+the `prev && {...}` state updaters return `null` (not `false`) and are type-safe;
+the ChatSidebar send is already serialized by its `loading` guard, so no stale
+history can occur; and recommendations to add defensive guards against
+unreachable states (missing session user, manually corrupted password hash) are
+declined under the project's no-defensive-programming standard.

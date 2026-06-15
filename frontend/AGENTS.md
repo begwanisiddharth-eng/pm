@@ -113,7 +113,8 @@ Note: Playwright e2e tests live in `tests/` and are excluded from Vitest.
 ## Tests added
 
 - Unit: `api.test.ts`, `useBoard.test.ts`, `AuthPanel.test.tsx`,
-  `ChatSidebar.test.tsx`, `KanbanBoard.test.tsx` (api/backend calls are mocked).
+  `ChatSidebar.test.tsx`, `KanbanBoard.test.tsx`, `NewCardForm.test.tsx`
+  (api/backend calls are mocked).
 - e2e (`tests/`): `auth`, `kanban`, `persistence`, `chat`, `enhancements`. The
   e2e database is reset by the `test:e2e` script; the chat backend is stubbed via
   route interception for determinism.
