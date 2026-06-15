@@ -18,7 +18,7 @@ static export (`output: "export"`) and served by the backend at `/`.
 ## Data model - `src/lib/kanban.ts`
 
 Pure, framework-free logic (no React). This is the source of truth for the board
-shape and should stay pure as persistence is added.
+shape and must stay pure (persistence lives in `useBoard.ts`, not here).
 
 - Types:
   - `Card` - `{ id, title, details }`
